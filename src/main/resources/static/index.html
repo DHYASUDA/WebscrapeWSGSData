@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Spring Boot Data Visualization</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        canvas {
+        max-width: 1200px; /* Increase from 800px */
+        width: 100%; /* Ensure it scales responsively */
+        height: 600px; /* Set a larger height */
+        margin: 20px auto;
+    }
+    h2 { text-align: center; }
+    </style>
+</head>
+<body>
+    <h2>Women with own children under 3 in the workforce: Annual Data</h2>
+    <canvas id="chartFMUP"></canvas>
+    <h2>Median usual weekly earnings (second quartile), Employed full time, Wage and salary workers, Black or African American: Quarterly Data</h2>
+    <canvas id="chartLEU"></canvas>
+    <h2>Avg hrs per day - Housework, Women: Annual Data</h2>
+    <canvas id="chartTUU"></canvas>
+    <h2>Avg hrs per day - Housework, Men: Annual Data</h2>
+    <canvas id="chartTUU1"></canvas>
+    <h2>Wage gaps between women and men in softhware engineering: Annual Data</h2>
+    <canvas id="chartLEU0"></canvas>
+
+    <script>
+        // Fetch data from the Spring Boot API
+        fetch('/api/data')
+            .then(response => response.json())
+            .then(data => {
+                const series = data.Results.series;
+
+                // Series FMUP1378869: Annual Data
+                const fmupData = series.find(s => s.seriesID === 'FMUP1378869').data;
+                const fmupLabels = fmupData.map(d => d.year).reverse(); // Reverse to show oldest to newest
+                const fmupValues = fmupData.map(d => parseFloat(d.value)).reverse();
+
+                new Chart(document.getElementById('chartFMUP'), {
+                    type: 'line',
+                    data: {
+                        labels: fmupLabels,
+                        datasets: [{
+                            label: 'FMUP1378869 Value',
+                            data: fmupValues,
+                            borderColor: 'blue',
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: { title: { display: true, text: 'Year' } },
+                            y: { title: { display: true, text: 'Value' } }
+                        }
+                    }
+                });
+
+                // Series LEU0252885100: Quarterly Data
+                const leuData = series.find(s => s.seriesID === 'LEU0252885100').data;
+                const leuLabels = leuData.map(d => `${d.year} ${d.periodName}`).reverse();
+                const leuValues = leuData.map(d => parseFloat(d.value)).reverse();
+
+                new Chart(document.getElementById('chartLEU'), {
+                    type: 'line',
+                    data: {
+                        labels: leuLabels,
+                        datasets: [{
+                            label: 'LEU0252885100 Value',
+                            data: leuValues,
+                            borderColor: 'green',
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: { title: { display: true, text: 'Quarter' } },
+                            y: { title: { display: true, text: 'Value' } }
+                        }
+                    }
+                });
+
+                // Series TUU10101AA01001023: Annual Data
+                const tuuData = series.find(s => s.seriesID === 'TUU10101AA01001023').data;
+                const tuuLabels = tuuData.map(d => d.year).reverse();
+                const tuuValues = tuuData
+                    .map(d => d.value === '-' ? null : parseFloat(d.value)) // Handle missing data
+                    .reverse();
+
+                new Chart(document.getElementById('chartTUU'), {
+                    type: 'line',
+                    data: {
+                        labels: tuuLabels,
+                        datasets: [{
+                            label: 'TUU10101AA01001023 Value',
+                            data: tuuValues,
+                            borderColor: 'red',
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: { title: { display: true, text: 'Year' } },
+                            y: { title: { display: true, text: 'Value' } }
+                        }
+                    }
+                });
+                const tuu1Data = series.find(s => s.seriesID === 'TUU10101AA01000944').data;
+                const tuu1Labels = tuu1Data.map(d => d.year).reverse();
+                const tuu1Values = tuu1Data
+                    .map(d => d.value === '-' ? null : parseFloat(d.value)) // Handle missing data
+                    .reverse();
+
+                new Chart(document.getElementById('chartTUU1'), {
+                    type: 'line',
+                    data: {
+                        labels: tuuLabels,
+                        datasets: [{
+                            label: 'TUU10101AA01000944 Value',
+                            data: tuu1Values,
+                            borderColor: 'purple',
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: { title: { display: true, text: 'Year' } },
+                            y: { title: { display: true, text: 'Value' } }
+                        }
+                    }
+                });
+                const LEU0Data = series.find(s => s.seriesID === 'LEU0257926700').data;
+                const LEU0Labels = LEU0Data.map(d => d.year).reverse();
+                const LEU0Values = LEU0Data
+                    .map(d => d.value === '-' ? null : parseFloat(d.value)) // Handle missing data
+                    .reverse();
+
+                new Chart(document.getElementById('chartLEU0'), {
+                    type: 'line',
+                    data: {
+                        labels: LEU0Labels,
+                        datasets: [{
+                            label: 'LEU0257926700 Value',
+                            data: LEU0Values,
+                            borderColor: 'Orange',
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: { title: { display: true, text: 'Year' } },
+                            y: { title: { display: true, text: 'Value' } }
+                        }
+                    }
+                });
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    </script>
+</body>
+</html>
